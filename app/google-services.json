@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "367945790142",
+    "project_id": "fresasapp",
+    "storage_bucket": "fresasapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:367945790142:android:74b14cfaf1c20d6d87a4ef",
+        "android_client_info": {
+          "package_name": "com.example.fresasapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTilAj-UNNDzGv8RTErjYXsSv0FJmjdwY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
