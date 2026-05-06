@@ -27,10 +27,11 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val authState by viewModel.authState.collectAsState()
-
-    // Contador de taps en el logo para acceso admin
     var tapCount by remember { mutableStateOf(0) }
     var modoAdmin by remember { mutableStateOf(false) }
+    var mostrarDialogoReset by remember { mutableStateOf(false) }
+    var emailReset by remember { mutableStateOf("") }
+    var mensajeReset by remember { mutableStateOf("") }
 
     LaunchedEffect(authState) {
         if (authState is AuthState.Success) {
@@ -40,11 +41,13 @@ fun LoginScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Logo — toca 5 veces para activar modo admin
+        // Logo con toque secreto para admin
         Text(
             text = if (modoAdmin) "🔧" else "🍓",
             fontSize = 64.sp,
@@ -116,7 +119,9 @@ fun LoginScreen(
 
         Button(
             onClick = { viewModel.login(email, password) },
-            modifier = Modifier.fillMaxWidth().height(50.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = if (modoAdmin) Color(0xFF880E4F) else Color(0xFFE91E63)
             ),
@@ -141,7 +146,14 @@ fun LoginScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Recuperar contraseña
+        TextButton(onClick = { mostrarDialogoReset = true }) {
+            Text("¿Olvidaste tu contraseña?", color = Color.Gray, fontSize = 13.sp)
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         if (!modoAdmin) {
             TextButton(onClick = onIrARegistro) {
@@ -155,5 +167,61 @@ fun LoginScreen(
                 Text("← Volver al login de clientes", color = Color.Gray)
             }
         }
+    }
+
+    // Diálogo recuperar contraseña
+    if (mostrarDialogoReset) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogoReset = false },
+            title = { Text("Recuperar contraseña") },
+            text = {
+                Column {
+                    Text("Ingresa tu correo y te enviaremos un link para restablecer tu contraseña.")
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = emailReset,
+                        onValueChange = { emailReset = it },
+                        label = { Text("Correo electrónico") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    if (mensajeReset.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            mensajeReset,
+                            color = if (mensajeReset.contains("✅")) Color(0xFF388E3C) else Color.Red,
+                            fontSize = 13.sp
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (emailReset.isNotEmpty()) {
+                            com.google.firebase.auth.FirebaseAuth.getInstance()
+                                .sendPasswordResetEmail(emailReset)
+                                .addOnSuccessListener {
+                                    mensajeReset = "✅ Correo enviado, revisa tu bandeja"
+                                }
+                                .addOnFailureListener {
+                                    mensajeReset = "❌ Error: ${it.message}"
+                                }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
+                ) {
+                    Text("Enviar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    mostrarDialogoReset = false
+                    mensajeReset = ""
+                }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }

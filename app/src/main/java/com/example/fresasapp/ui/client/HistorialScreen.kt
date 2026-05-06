@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,9 +31,37 @@ fun HistorialScreen(
 ) {
     val pedidos by viewModel.pedidosCliente.collectAsState()
     val clienteId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.obtenerPedidosCliente(clienteId)
+    }
+
+    // Notificación local cuando el pedido está listo o entregado
+    LaunchedEffect(pedidos) {
+        pedidos.forEach { pedido ->
+            if (pedido.estado == "listo" || pedido.estado == "entregado") {
+                val channelId = "fresasapp_channel"
+                val notificationManager = context.getSystemService(
+                    android.content.Context.NOTIFICATION_SERVICE
+                ) as android.app.NotificationManager
+
+                val mensaje = if (pedido.estado == "listo")
+                    "✅ Tu pedido #${pedido.id.take(6).uppercase()} está listo"
+                else
+                    "🎉 Tu pedido #${pedido.id.take(6).uppercase()} fue entregado"
+
+                val notification = androidx.core.app.NotificationCompat.Builder(context, channelId)
+                    .setSmallIcon(android.R.drawable.ic_dialog_info)
+                    .setContentTitle("FresasApp 🍓")
+                    .setContentText(mensaje)
+                    .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
+                    .setAutoCancel(true)
+                    .build()
+
+                notificationManager.notify(pedido.id.hashCode(), notification)
+            }
+        }
     }
 
     Scaffold(
@@ -121,7 +150,6 @@ fun PedidoClienteCard(pedido: Pedido) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
 
-            // Header
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -150,7 +178,6 @@ fun PedidoClienteCard(pedido: Pedido) {
             HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Fecha y tipo de entrega
             Text("🕐 $fecha", fontSize = 13.sp, color = Color.Gray)
             Text(
                 "🚚 ${if (pedido.tipoEntrega == "delivery") "Delivery a domicilio" else "Recoger en tienda"}",
@@ -162,7 +189,6 @@ fun PedidoClienteCard(pedido: Pedido) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Productos
             Text("Productos:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
             pedido.items.forEach { item ->
                 Row(
@@ -178,7 +204,6 @@ fun PedidoClienteCard(pedido: Pedido) {
             HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Total
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -192,7 +217,6 @@ fun PedidoClienteCard(pedido: Pedido) {
                 )
             }
 
-            // Mensaje si el pedido está listo
             if (pedido.estado == "listo") {
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(
@@ -203,6 +227,22 @@ fun PedidoClienteCard(pedido: Pedido) {
                         "✅ ¡Tu pedido está listo! Pasa a recogerlo 🍓",
                         modifier = Modifier.padding(12.dp),
                         color = Color(0xFF388E3C),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp
+                    )
+                }
+            }
+
+            if (pedido.estado == "entregado") {
+                Spacer(modifier = Modifier.height(8.dp))
+                Surface(
+                    color = Color(0xFF616161).copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text(
+                        "🎉 ¡Tu pedido fue entregado! Gracias por tu compra",
+                        modifier = Modifier.padding(12.dp),
+                        color = Color(0xFF616161),
                         fontWeight = FontWeight.Bold,
                         fontSize = 13.sp
                     )
