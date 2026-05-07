@@ -35,11 +35,11 @@ fun SplashScreen(onSplashTerminado: () -> Unit) {
         onSplashTerminado()
     }
 
-    // Fondo negro para combinar con el logo
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF0D0D0D)),
+            .background(Color(0xFFE1175E)),
         contentAlignment = Alignment.Center
     ) {
         Column(
