@@ -36,7 +36,6 @@ fun ClienteHomeScreen(
     var busqueda by remember { mutableStateOf("") }
     var buscando by remember { mutableStateOf(false) }
 
-    // Filtrar productos por búsqueda
     val productosFiltrados = productos.filter { it.disponible }.filter { producto ->
         if (busqueda.isEmpty()) true
         else producto.nombre.contains(busqueda, ignoreCase = true) ||
@@ -51,13 +50,17 @@ fun ClienteHomeScreen(
     Scaffold(
         topBar = {
             if (buscando) {
-                // Barra de búsqueda
                 TopAppBar(
                     title = {
                         OutlinedTextField(
                             value = busqueda,
                             onValueChange = { busqueda = it },
-                            placeholder = { Text("Buscar productos...", color = Color.White.copy(alpha = 0.7f)) },
+                            placeholder = {
+                                Text(
+                                    "Buscar productos...",
+                                    color = Color.White.copy(alpha = 0.7f)
+                                )
+                            },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
                             colors = OutlinedTextFieldDefaults.colors(
@@ -82,11 +85,10 @@ fun ClienteHomeScreen(
                     )
                 )
             } else {
-                // Barra normal
                 TopAppBar(
                     title = {
                         Column {
-                            Text("🍓 FresasApp", fontWeight = FontWeight.Bold)
+                            Text("🍓 Nay&Jos", fontWeight = FontWeight.Bold)
                             Text(
                                 "¿Qué se te antoja hoy?",
                                 fontSize = 12.sp,
@@ -136,10 +138,7 @@ fun ClienteHomeScreen(
         } else if (productosFiltrados.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        if (busqueda.isEmpty()) "🍓" else "🔍",
-                        fontSize = 64.sp
-                    )
+                    Text(if (busqueda.isEmpty()) "🍓" else "🔍", fontSize = 64.sp)
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         if (busqueda.isEmpty()) "No hay productos disponibles"
@@ -162,7 +161,6 @@ fun ClienteHomeScreen(
                     .padding(padding)
                     .padding(16.dp)
             ) {
-                // Encabezado con resultados
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -181,16 +179,13 @@ fun ClienteHomeScreen(
                     }
                 }
 
-                // Chips de categorías
                 if (busqueda.isEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         listOf("Todos", "fresas", "carlota", "vaso_pay").forEach { cat ->
                             FilterChip(
                                 selected = busqueda == cat || (cat == "Todos" && busqueda.isEmpty()),
-                                onClick = {
-                                    busqueda = if (cat == "Todos") "" else cat
-                                },
+                                onClick = { busqueda = if (cat == "Todos") "" else cat },
                                 label = {
                                     Text(
                                         when (cat) {

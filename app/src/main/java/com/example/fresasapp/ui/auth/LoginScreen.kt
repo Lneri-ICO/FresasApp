@@ -1,20 +1,25 @@
 package com.example.fresasapp.ui.auth
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fresasapp.R
 import com.example.fresasapp.viewmodel.AuthState
 import com.example.fresasapp.viewmodel.AuthViewModel
 
@@ -43,40 +48,55 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
         // Logo con toque secreto para admin
-        Text(
-            text = if (modoAdmin) "🔧" else "🍓",
-            fontSize = 64.sp,
-            modifier = Modifier.pointerInput(Unit) {
-                detectTapGestures {
-                    tapCount++
-                    if (tapCount >= 5) {
-                        modoAdmin = !modoAdmin
-                        tapCount = 0
+        if (modoAdmin) {
+            Text(
+                text = "🔧",
+                fontSize = 64.sp,
+                modifier = Modifier.pointerInput(Unit) {
+                    detectTapGestures {
+                        tapCount++
+                        if (tapCount >= 5) {
+                            modoAdmin = false
+                            tapCount = 0
+                        }
                     }
                 }
-            }
-        )
+            )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.logo_login),
+                contentDescription = "Nay&Jos Logo",
+                modifier = Modifier
+                    .size(220.dp)
+                    .pointerInput(Unit) {
+                        detectTapGestures {
+                            tapCount++
+                            if (tapCount >= 5) {
+                                modoAdmin = true
+                                tapCount = 0
+                            }
+                        }
+                    }
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            text = if (modoAdmin) "Acceso Administrador" else "FresasApp",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = if (modoAdmin) Color(0xFF880E4F) else Color(0xFFE91E63)
-        )
-
-        Text(
-            text = if (modoAdmin) "Panel de control" else "Inicia sesión para continuar",
-            color = Color.Gray
-        )
-
         if (modoAdmin) {
+            Text(
+                text = "Acceso Administrador",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF880E4F)
+            )
+            Text(text = "Panel de control", color = Color.Gray)
             Spacer(modifier = Modifier.height(8.dp))
             Surface(
                 color = Color(0xFF880E4F).copy(alpha = 0.1f),
@@ -90,6 +110,12 @@ fun LoginScreen(
                     fontWeight = FontWeight.Bold
                 )
             }
+        } else {
+            Text(
+                text = "Inicia sesión para continuar",
+                color = Color.Gray,
+                fontSize = 14.sp
+            )
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -148,7 +174,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Recuperar contraseña
         TextButton(onClick = { mostrarDialogoReset = true }) {
             Text("¿Olvidaste tu contraseña?", color = Color.Gray, fontSize = 13.sp)
         }

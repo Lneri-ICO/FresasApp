@@ -39,7 +39,11 @@ fun AdminHomeScreen(
                 title = {
                     Column {
                         Text("🔧 Panel Admin", fontWeight = FontWeight.Bold)
-                        Text("FresasApp", fontSize = 12.sp, color = Color.White.copy(alpha = 0.8f))
+                        Text(
+                            "Nay&Jos",
+                            fontSize = 12.sp,
+                            color = Color.White.copy(alpha = 0.8f)
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
