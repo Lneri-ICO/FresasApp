@@ -1,6 +1,7 @@
 package com.example.fresasapp.ui.auth
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -46,147 +47,157 @@ fun LoginScreen(
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .background(Color.White)
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
 
-        if (modoAdmin) {
-            Text(
-                text = "🔧",
-                fontSize = 64.sp,
-                modifier = Modifier.pointerInput(Unit) {
-                    detectTapGestures {
-                        tapCount++
-                        if (tapCount >= 5) {
-                            modoAdmin = false
-                            tapCount = 0
-                        }
-                    }
-                }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Acceso Administrador",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF880E4F)
-            )
-            Text(text = "Panel de control", color = Color.Gray)
-            Spacer(modifier = Modifier.height(8.dp))
-            Surface(
-                color = Color(0xFF880E4F).copy(alpha = 0.1f),
-                shape = MaterialTheme.shapes.small
-            ) {
+            if (modoAdmin) {
+                Spacer(modifier = Modifier.height(48.dp))
                 Text(
-                    "🔒 Modo Administrador",
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                    color = Color(0xFF880E4F),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-        } else {
-            Image(
-                painter = painterResource(id = R.drawable.logo_login),
-                contentDescription = "Nay&Jos Logo",
-                modifier = Modifier
-                    .fillMaxWidth(0.75f)
-                    .aspectRatio(1f)
-                    .pointerInput(Unit) {
+                    text = "🔧",
+                    fontSize = 64.sp,
+                    modifier = Modifier.pointerInput(Unit) {
                         detectTapGestures {
                             tapCount++
                             if (tapCount >= 5) {
-                                modoAdmin = true
+                                modoAdmin = false
                                 tapCount = 0
                             }
                         }
-                    },
-                contentScale = ContentScale.Fit
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "Inicia sesión para continuar",
-                color = Color.Gray,
-                fontSize = 14.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Correo electrónico") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = { viewModel.login(email, password) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (modoAdmin) Color(0xFF880E4F) else Color(0xFFE91E63)
-            ),
-            enabled = authState !is AuthState.Loading
-        ) {
-            if (authState is AuthState.Loading) {
-                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-            } else {
+                    }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    if (modoAdmin) "Entrar como Admin" else "Iniciar Sesión",
-                    fontSize = 16.sp
+                    text = "Acceso Administrador",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF880E4F)
+                )
+                Text(text = "Panel de control", color = Color.Gray)
+                Spacer(modifier = Modifier.height(8.dp))
+                Surface(
+                    color = Color(0xFF880E4F).copy(alpha = 0.1f),
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text(
+                        "🔒 Modo Administrador",
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                        color = Color(0xFF880E4F),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            } else {
+                // Logo ocupa la mitad superior sin padding extra
+                Image(
+                    painter = painterResource(id = R.drawable.logo_login),
+                    contentDescription = "Nay&Jos Logo",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .pointerInput(Unit) {
+                            detectTapGestures {
+                                tapCount++
+                                if (tapCount >= 5) {
+                                    modoAdmin = true
+                                    tapCount = 0
+                                }
+                            }
+                        },
+                    contentScale = ContentScale.Fit
+                )
+
+                Text(
+                    text = "Inicia sesión para continuar",
+                    color = Color.Gray,
+                    fontSize = 14.sp
                 )
             }
-        }
 
-        if (authState is AuthState.Error) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                (authState as AuthState.Error).mensaje,
-                color = Color.Red,
-                fontSize = 14.sp
+            Spacer(modifier = Modifier.height(20.dp))
+
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Correo electrónico") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
-        }
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        TextButton(onClick = { mostrarDialogoReset = true }) {
-            Text("¿Olvidaste tu contraseña?", color = Color.Gray, fontSize = 13.sp)
-        }
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Contraseña") },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
 
-        if (!modoAdmin) {
-            TextButton(onClick = onIrARegistro) {
-                Text("¿No tienes cuenta? Regístrate aquí", color = Color(0xFFE91E63))
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(
+                onClick = { viewModel.login(email, password) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (modoAdmin) Color(0xFF880E4F) else Color(0xFFE91E63)
+                ),
+                enabled = authState !is AuthState.Loading
+            ) {
+                if (authState is AuthState.Loading) {
+                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                } else {
+                    Text(
+                        if (modoAdmin) "Entrar como Admin" else "Iniciar Sesión",
+                        fontSize = 16.sp
+                    )
+                }
             }
-        } else {
-            TextButton(onClick = {
-                modoAdmin = false
-                tapCount = 0
-            }) {
-                Text("← Volver al login de clientes", color = Color.Gray)
+
+            if (authState is AuthState.Error) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    (authState as AuthState.Error).mensaje,
+                    color = Color.Red,
+                    fontSize = 14.sp
+                )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            TextButton(onClick = { mostrarDialogoReset = true }) {
+                Text("¿Olvidaste tu contraseña?", color = Color.Gray, fontSize = 13.sp)
+            }
+
+            if (!modoAdmin) {
+                TextButton(onClick = onIrARegistro) {
+                    Text("¿No tienes cuenta? Regístrate aquí", color = Color(0xFFE91E63))
+                }
+            } else {
+                TextButton(onClick = {
+                    modoAdmin = false
+                    tapCount = 0
+                }) {
+                    Text("← Volver al login de clientes", color = Color.Gray)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 
