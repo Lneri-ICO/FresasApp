@@ -2,7 +2,6 @@ package com.example.fresasapp.ui
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
@@ -11,10 +10,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 import com.example.fresasapp.R
 import kotlinx.coroutines.delay
 
@@ -42,14 +43,20 @@ fun SplashScreen(onSplashTerminado: () -> Unit) {
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.alpha(alpha)
+            modifier = Modifier
+                .alpha(alpha)
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.logo_splash),
                 contentDescription = "Nay&Jos Logo",
-                modifier = Modifier.size(280.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f),
+                contentScale = ContentScale.Fit
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Postres frescos y deliciosos",
                 fontSize = 16.sp,

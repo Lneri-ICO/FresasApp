@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -54,7 +55,6 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center
     ) {
 
-        // Logo con toque secreto para admin
         if (modoAdmin) {
             Text(
                 text = "🔧",
@@ -69,27 +69,7 @@ fun LoginScreen(
                     }
                 }
             )
-        } else {
-            Image(
-                painter = painterResource(id = R.drawable.logo_login),
-                contentDescription = "Nay&Jos Logo",
-                modifier = Modifier
-                    .size(220.dp)
-                    .pointerInput(Unit) {
-                        detectTapGestures {
-                            tapCount++
-                            if (tapCount >= 5) {
-                                modoAdmin = true
-                                tapCount = 0
-                            }
-                        }
-                    }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        if (modoAdmin) {
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Acceso Administrador",
                 fontSize = 24.sp,
@@ -111,6 +91,24 @@ fun LoginScreen(
                 )
             }
         } else {
+            Image(
+                painter = painterResource(id = R.drawable.logo_login),
+                contentDescription = "Nay&Jos Logo",
+                modifier = Modifier
+                    .fillMaxWidth(0.75f)
+                    .aspectRatio(1f)
+                    .pointerInput(Unit) {
+                        detectTapGestures {
+                            tapCount++
+                            if (tapCount >= 5) {
+                                modoAdmin = true
+                                tapCount = 0
+                            }
+                        }
+                    },
+                contentScale = ContentScale.Fit
+            )
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "Inicia sesión para continuar",
                 color = Color.Gray,
@@ -118,7 +116,7 @@ fun LoginScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         OutlinedTextField(
             value = email,
@@ -177,8 +175,6 @@ fun LoginScreen(
         TextButton(onClick = { mostrarDialogoReset = true }) {
             Text("¿Olvidaste tu contraseña?", color = Color.Gray, fontSize = 13.sp)
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         if (!modoAdmin) {
             TextButton(onClick = onIrARegistro) {
