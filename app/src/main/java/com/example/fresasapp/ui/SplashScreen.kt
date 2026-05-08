@@ -35,19 +35,20 @@ fun SplashScreen(onSplashTerminado: () -> Unit) {
         onSplashTerminado()
     }
 
+    // El fondo es del mismo color rosa del logo para que se vea uniforme
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE91E63)),
+            .background(Color(0xFFE8255A)), // mismo rosa del logo
         contentAlignment = Alignment.Center
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo_splash),
-            contentDescription = "Nay&Jos Logo",
+            contentDescription = "Nay&Jos",
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .alpha(alpha),
-            contentScale = ContentScale.Fit
+            contentScale = ContentScale.FillWidth
         )
     }
 }

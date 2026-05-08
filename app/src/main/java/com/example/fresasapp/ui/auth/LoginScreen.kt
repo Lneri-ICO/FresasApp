@@ -95,13 +95,13 @@ fun LoginScreen(
                     )
                 }
             } else {
-                // Logo ocupa el tercio superior
+                // Logo más compacto verticalmente
                 Image(
                     painter = painterResource(id = R.drawable.logo_login),
                     contentDescription = "Nay&Jos Logo",
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1.2f)
+                        .fillMaxWidth(0.65f)  // no ocupa todo el ancho
+                        .padding(top = 48.dp) // pequeño espacio arriba
                         .pointerInput(Unit) {
                             detectTapGestures {
                                 tapCount++
@@ -111,11 +111,11 @@ fun LoginScreen(
                                 }
                             }
                         },
-                    contentScale = ContentScale.Fit
+                    contentScale = ContentScale.FillWidth
                 )
             }
 
-            // Todo el formulario pegado al logo
+            // Formulario pegado al logo
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -123,6 +123,7 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (!modoAdmin) {
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Inicia sesión para continuar",
                         color = Color.Gray,
@@ -209,7 +210,6 @@ fun LoginScreen(
         }
     }
 
-    // Diálogo recuperar contraseña
     if (mostrarDialogoReset) {
         AlertDialog(
             onDismissRequest = { mostrarDialogoReset = false },
