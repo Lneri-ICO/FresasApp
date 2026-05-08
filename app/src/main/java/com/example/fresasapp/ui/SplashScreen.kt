@@ -35,34 +35,19 @@ fun SplashScreen(onSplashTerminado: () -> Unit) {
         onSplashTerminado()
     }
 
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE1175E)),
+            .background(Color(0xFFE91E63)),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Image(
+            painter = painterResource(id = R.drawable.logo_splash),
+            contentDescription = "Nay&Jos Logo",
             modifier = Modifier
-                .alpha(alpha)
-                .fillMaxWidth()
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.logo_splash),
-                contentDescription = "Nay&Jos Logo",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f),
-                contentScale = ContentScale.Fit
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Postres frescos y deliciosos",
-                fontSize = 16.sp,
-                color = Color.White.copy(alpha = 0.8f),
-                fontWeight = FontWeight.Medium
-            )
-        }
+                .fillMaxSize()
+                .alpha(alpha),
+            contentScale = ContentScale.Fit
+        )
     }
 }

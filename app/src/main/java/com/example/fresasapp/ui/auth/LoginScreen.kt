@@ -55,14 +55,11 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             if (modoAdmin) {
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(80.dp))
                 Text(
                     text = "🔧",
                     fontSize = 64.sp,
@@ -98,13 +95,13 @@ fun LoginScreen(
                     )
                 }
             } else {
-                // Logo ocupa la mitad superior sin padding extra
+                // Logo ocupa el tercio superior
                 Image(
                     painter = painterResource(id = R.drawable.logo_login),
                     contentDescription = "Nay&Jos Logo",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f)
+                        .aspectRatio(1.2f)
                         .pointerInput(Unit) {
                             detectTapGestures {
                                 tapCount++
@@ -116,88 +113,99 @@ fun LoginScreen(
                         },
                     contentScale = ContentScale.Fit
                 )
-
-                Text(
-                    text = "Inicia sesión para continuar",
-                    color = Color.Gray,
-                    fontSize = 14.sp
-                )
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Correo electrónico") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Contraseña") },
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button(
-                onClick = { viewModel.login(email, password) },
+            // Todo el formulario pegado al logo
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (modoAdmin) Color(0xFF880E4F) else Color(0xFFE91E63)
-                ),
-                enabled = authState !is AuthState.Loading
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (authState is AuthState.Loading) {
-                    CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
-                } else {
+                if (!modoAdmin) {
                     Text(
-                        if (modoAdmin) "Entrar como Admin" else "Iniciar Sesión",
-                        fontSize = 16.sp
+                        text = "Inicia sesión para continuar",
+                        color = Color.Gray,
+                        fontSize = 14.sp
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Correo electrónico") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Contraseña") },
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { viewModel.login(email, password) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (modoAdmin) Color(0xFF880E4F) else Color(0xFFE91E63)
+                    ),
+                    enabled = authState !is AuthState.Loading
+                ) {
+                    if (authState is AuthState.Loading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    } else {
+                        Text(
+                            if (modoAdmin) "Entrar como Admin" else "Iniciar Sesión",
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+
+                if (authState is AuthState.Error) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        (authState as AuthState.Error).mensaje,
+                        color = Color.Red,
+                        fontSize = 14.sp
                     )
                 }
-            }
 
-            if (authState is AuthState.Error) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    (authState as AuthState.Error).mensaje,
-                    color = Color.Red,
-                    fontSize = 14.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            TextButton(onClick = { mostrarDialogoReset = true }) {
-                Text("¿Olvidaste tu contraseña?", color = Color.Gray, fontSize = 13.sp)
-            }
-
-            if (!modoAdmin) {
-                TextButton(onClick = onIrARegistro) {
-                    Text("¿No tienes cuenta? Regístrate aquí", color = Color(0xFFE91E63))
+                TextButton(onClick = { mostrarDialogoReset = true }) {
+                    Text("¿Olvidaste tu contraseña?", color = Color.Gray, fontSize = 13.sp)
                 }
-            } else {
-                TextButton(onClick = {
-                    modoAdmin = false
-                    tapCount = 0
-                }) {
-                    Text("← Volver al login de clientes", color = Color.Gray)
+
+                if (!modoAdmin) {
+                    TextButton(onClick = onIrARegistro) {
+                        Text(
+                            "¿No tienes cuenta? Regístrate aquí",
+                            color = Color(0xFFE91E63)
+                        )
+                    }
+                } else {
+                    TextButton(onClick = {
+                        modoAdmin = false
+                        tapCount = 0
+                    }) {
+                        Text("← Volver al login de clientes", color = Color.Gray)
+                    }
                 }
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 
@@ -221,7 +229,8 @@ fun LoginScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             mensajeReset,
-                            color = if (mensajeReset.contains("✅")) Color(0xFF388E3C) else Color.Red,
+                            color = if (mensajeReset.contains("✅"))
+                                Color(0xFF388E3C) else Color.Red,
                             fontSize = 13.sp
                         )
                     }
