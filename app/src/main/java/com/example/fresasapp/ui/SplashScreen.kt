@@ -39,7 +39,7 @@ fun SplashScreen(onSplashTerminado: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE8225B)), // mismo rosa del logo
+            .background(Color(0xFFE32358)), // mismo rosa del logo
         contentAlignment = Alignment.Center
     ) {
         Image(
