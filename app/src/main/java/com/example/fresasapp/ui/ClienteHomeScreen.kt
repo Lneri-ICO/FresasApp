@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,6 +29,7 @@ fun ClienteHomeScreen(
     onCerrarSesion: () -> Unit,
     onIrAHistorial: () -> Unit,
     onIrAPerfil: () -> Unit,
+    onVerResenas: (String, String) -> Unit,
     productoViewModel: ProductoViewModel = viewModel()
 ) {
     val productos by productoViewModel.productos.collectAsState()
@@ -77,7 +79,11 @@ fun ClienteHomeScreen(
                             buscando = false
                             busqueda = ""
                         }) {
-                            Icon(Icons.Default.Close, contentDescription = "Cerrar", tint = Color.White)
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Cerrar",
+                                tint = Color.White
+                            )
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -102,7 +108,11 @@ fun ClienteHomeScreen(
                     ),
                     actions = {
                         IconButton(onClick = { buscando = true }) {
-                            Icon(Icons.Default.Search, contentDescription = "Buscar", tint = Color.White)
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = "Buscar",
+                                tint = Color.White
+                            )
                         }
                         IconButton(onClick = onIrAPerfil) {
                             Text("👤", fontSize = 20.sp)
@@ -213,7 +223,10 @@ fun ClienteHomeScreen(
                     items(productosFiltrados) { producto ->
                         ProductoCard(
                             producto = producto,
-                            onAgregar = { carrito.add(producto) }
+                            onAgregar = { carrito.add(producto) },
+                            onVerResenas = {
+                                onVerResenas(producto.id, producto.nombre)
+                            }
                         )
                     }
                 }
@@ -223,7 +236,11 @@ fun ClienteHomeScreen(
 }
 
 @Composable
-fun ProductoCard(producto: Producto, onAgregar: () -> Unit) {
+fun ProductoCard(
+    producto: Producto,
+    onAgregar: () -> Unit,
+    onVerResenas: () -> Unit = {}
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -245,7 +262,27 @@ fun ProductoCard(producto: Producto, onAgregar: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(producto.nombre, fontWeight = FontWeight.Bold, fontSize = 14.sp)
             Text(producto.descripcion, fontSize = 11.sp, color = Color.Gray)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Estrellas
+            TextButton(
+                onClick = onVerResenas,
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    repeat(5) {
+                        Icon(
+                            Icons.Default.Star,
+                            contentDescription = null,
+                            tint = Color(0xFFFFC107),
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Ver reseñas", fontSize = 11.sp, color = Color.Gray)
+                }
+            }
+
             Text(
                 "$${producto.precio}",
                 fontWeight = FontWeight.Bold,

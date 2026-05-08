@@ -25,6 +25,7 @@ import com.example.fresasapp.ui.client.ClienteHomeScreen
 import com.example.fresasapp.ui.client.ConfirmacionScreen
 import com.example.fresasapp.ui.client.HistorialScreen
 import com.example.fresasapp.ui.client.PerfilScreen
+import com.example.fresasapp.ui.client.ResenaScreen
 import com.example.fresasapp.ui.theme.FresasAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -111,6 +112,9 @@ class MainActivity : ComponentActivity() {
                             },
                             onIrAPerfil = {
                                 navController.navigate("perfil")
+                            },
+                            onVerResenas = { productoId, nombre ->
+                                navController.navigate("resenas/$productoId/$nombre")
                             }
                         )
                     }
@@ -149,6 +153,16 @@ class MainActivity : ComponentActivity() {
 
                     composable("historial") {
                         HistorialScreen(
+                            onRegresar = { navController.popBackStack() }
+                        )
+                    }
+
+                    composable("resenas/{productoId}/{nombre}") { backStackEntry ->
+                        val productoId = backStackEntry.arguments?.getString("productoId") ?: ""
+                        val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
+                        ResenaScreen(
+                            productoId = productoId,
+                            productoNombre = nombre,
                             onRegresar = { navController.popBackStack() }
                         )
                     }
