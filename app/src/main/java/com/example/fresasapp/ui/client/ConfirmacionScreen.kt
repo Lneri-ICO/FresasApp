@@ -2,6 +2,7 @@ package com.example.fresasapp.ui.client
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -14,7 +15,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fresasapp.TicketPdfGenerator
 import com.example.fresasapp.data.model.Producto
 import com.example.fresasapp.viewmodel.PedidoState
 import com.example.fresasapp.viewmodel.PedidoViewModel
@@ -69,7 +72,9 @@ fun ConfirmacionScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFFCE4EC))
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFFFCE4EC)
+                        )
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -80,14 +85,17 @@ fun ConfirmacionScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Text("📋 ID: #${pedido.id.take(8).uppercase()}")
                             Text(
-                                "🚚 Entrega: ${if (tipoEntrega == "delivery") "Delivery a domicilio" else "Recoger en tienda"}"
+                                "🚚 Entrega: ${
+                                    if (tipoEntrega == "delivery") "Delivery a domicilio"
+                                    else "Recoger en tienda"
+                                }"
                             )
                             Text("💰 Total: $${pedido.total}")
                             Text("📦 Estado: Recibido")
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     // Mensaje según tipo de entrega
                     Surface(
@@ -110,24 +118,71 @@ fun ConfirmacionScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
+                    // Botón volver al inicio
                     Button(
                         onClick = onIrAlInicio,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFE91E63)
+                        ),
                         shape = RoundedCornerShape(12.dp)
                     ) {
-                        Text("Volver al inicio", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            "Volver al inicio",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Compartir por WhatsApp
+                    // Botón descargar PDF
+                    OutlinedButton(
+                        onClick = {
+                            val archivo = TicketPdfGenerator.generarTicket(context, pedido)
+                            if (archivo != null) {
+                                val uri = FileProvider.getUriForFile(
+                                    context,
+                                    "${context.packageName}.provider",
+                                    archivo
+                                )
+                                val intent = Intent(Intent.ACTION_VIEW).apply {
+                                    setDataAndType(uri, "application/pdf")
+                                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                }
+                                context.startActivity(intent)
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Error al generar el ticket",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color(0xFF1976D2)
+                        )
+                    ) {
+                        Text(
+                            "🎫 Descargar Ticket PDF",
+                            fontSize = 15.sp,
+                            color = Color(0xFF1976D2)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Botón compartir por WhatsApp
                     OutlinedButton(
                         onClick = {
                             val texto = """
-                                🍓 *FresasApp - Pedido Confirmado*
+                                🍓 *Nay&Jos - Pedido Confirmado*
                                 
                                 📋 Pedido: #${pedido.id.take(8).uppercase()}
                                 🚚 Entrega: ${if (tipoEntrega == "delivery") "Delivery" else "Recoger en tienda"}
@@ -166,7 +221,11 @@ fun ConfirmacionScreen(
                 ) {
                     Text("❌", fontSize = 64.sp)
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("Error al crear el pedido", fontSize = 18.sp, color = Color.Red)
+                    Text(
+                        "Error al crear el pedido",
+                        fontSize = 18.sp,
+                        color = Color.Red
+                    )
                     Text(
                         (pedidoState as PedidoState.Error).mensaje,
                         color = Color.Gray,
@@ -175,7 +234,9 @@ fun ConfirmacionScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     Button(
                         onClick = onIrAlInicio,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFE91E63)
+                        )
                     ) {
                         Text("Regresar")
                     }
