@@ -9,6 +9,7 @@ data class Pedido(
     val estado: String = "recibido",
     val tipoEntrega: String = "",
     val direccion: String = "",
+    val tiempoEstimado: String = "", // ← nuevo
     val fechaCreacion: Long = System.currentTimeMillis()
 )
 

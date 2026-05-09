@@ -41,6 +41,7 @@ class PedidoRepository {
                 estado = "recibido",
                 tipoEntrega = tipoEntrega,
                 direccion = direccion,
+                tiempoEstimado = "",
                 fechaCreacion = System.currentTimeMillis()
             )
 
@@ -85,7 +86,19 @@ class PedidoRepository {
                 .update("estado", nuevoEstado).await()
 
             enviarNotificacion(clienteId, nuevoEstado)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
+    suspend fun actualizarTiempoEstimado(
+        pedidoId: String,
+        tiempo: String
+    ): Result<Unit> {
+        return try {
+            db.collection("pedidos").document(pedidoId)
+                .update("tiempoEstimado", tiempo).await()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -107,7 +120,7 @@ class PedidoRepository {
             db.collection("notificaciones").add(
                 mapOf(
                     "token" to token,
-                    "titulo" to "FresasApp 🍓",
+                    "titulo" to "Nay&Jos 🍓",
                     "mensaje" to mensaje,
                     "estado" to estado,
                     "timestamp" to System.currentTimeMillis()

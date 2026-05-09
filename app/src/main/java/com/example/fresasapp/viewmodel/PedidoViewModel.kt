@@ -64,4 +64,11 @@ class PedidoViewModel : ViewModel() {
             obtenerPedidos()
         }
     }
+
+    fun actualizarTiempoEstimado(pedidoId: String, tiempo: String) {
+        viewModelScope.launch {
+            repository.actualizarTiempoEstimado(pedidoId, tiempo)
+            obtenerPedidos()
+        }
+    }
 }

@@ -37,7 +37,6 @@ fun HistorialScreen(
         viewModel.obtenerPedidosCliente(clienteId)
     }
 
-    // Notificación local cuando el pedido está listo o entregado
     LaunchedEffect(pedidos) {
         pedidos.forEach { pedido ->
             if (pedido.estado == "listo" || pedido.estado == "entregado") {
@@ -53,7 +52,7 @@ fun HistorialScreen(
 
                 val notification = androidx.core.app.NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(android.R.drawable.ic_dialog_info)
-                    .setContentTitle("FresasApp 🍓")
+                    .setContentTitle("Nay&Jos 🍓")
                     .setContentText(mensaje)
                     .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
                     .setAutoCancel(true)
@@ -93,7 +92,9 @@ fun HistorialScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = onRegresar,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63))
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFE91E63)
+                        )
                     ) {
                         Text("Ver productos")
                     }
@@ -187,6 +188,40 @@ fun PedidoClienteCard(pedido: Pedido) {
                 Text("📍 ${pedido.direccion}", fontSize = 13.sp, color = Color.Gray)
             }
 
+            // Tiempo estimado
+            if (pedido.tiempoEstimado.isNotEmpty() &&
+                (pedido.estado == "recibido" || pedido.estado == "preparando")
+            ) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Surface(
+                    color = Color(0xFF1976D2).copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("⏱️", fontSize = 20.sp)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                "Tiempo estimado",
+                                fontSize = 11.sp,
+                                color = Color.Gray
+                            )
+                            Text(
+                                pedido.tiempoEstimado,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF1976D2)
+                            )
+                        }
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
 
             Text("Productos:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
@@ -217,6 +252,7 @@ fun PedidoClienteCard(pedido: Pedido) {
                 )
             }
 
+            // Mensaje si el pedido está listo
             if (pedido.estado == "listo") {
                 Spacer(modifier = Modifier.height(8.dp))
                 Surface(

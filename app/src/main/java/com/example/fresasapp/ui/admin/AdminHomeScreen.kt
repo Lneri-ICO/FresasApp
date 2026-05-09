@@ -74,7 +74,9 @@ fun AdminHomeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = { viewModel.obtenerPedidos() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF880E4F))
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF880E4F)
+                        )
                     ) {
                         Text("Actualizar")
                     }
@@ -110,6 +112,9 @@ fun AdminHomeScreen(
                         pedido = pedido,
                         onCambiarEstado = { nuevoEstado ->
                             viewModel.actualizarEstado(pedido.id, nuevoEstado)
+                        },
+                        onActualizarTiempo = { tiempo ->
+                            viewModel.actualizarTiempoEstimado(pedido.id, tiempo)
                         }
                     )
                 }
@@ -118,10 +123,12 @@ fun AdminHomeScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PedidoAdminCard(
     pedido: Pedido,
-    onCambiarEstado: (String) -> Unit
+    onCambiarEstado: (String) -> Unit,
+    onActualizarTiempo: (String) -> Unit
 ) {
     val coloresEstado = mapOf(
         "recibido" to Color(0xFF1976D2),
@@ -138,6 +145,9 @@ fun PedidoAdminCard(
 
     val fecha = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         .format(Date(pedido.fechaCreacion))
+
+    var mostrarTiempo by remember { mutableStateOf(false) }
+    val tiempos = listOf("10 min", "15 min", "20 min", "30 min", "45 min", "1 hora")
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -187,7 +197,10 @@ fun PedidoAdminCard(
             Spacer(modifier = Modifier.height(8.dp))
             Text("Productos:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
             pedido.items.forEach { item ->
-                Text("  • ${item.nombre} x${item.cantidad} — $${item.precio}", fontSize = 13.sp)
+                Text(
+                    "  • ${item.nombre} x${item.cantidad} — $${item.precio}",
+                    fontSize = 13.sp
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -221,6 +234,78 @@ fun PedidoAdminCard(
                     "preparando" -> "✅ Marcar como listo"
                     "listo" -> "🎉 Marcar como entregado"
                     else -> ""
+                }
+
+                // Tiempo estimado actual
+                if (pedido.tiempoEstimado.isNotEmpty()) {
+                    Surface(
+                        color = Color(0xFF1976D2).copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            "⏱️ Tiempo estimado: ${pedido.tiempoEstimado}",
+                            modifier = Modifier.padding(12.dp),
+                            color = Color(0xFF1976D2),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                // Botón asignar tiempo
+                OutlinedButton(
+                    onClick = { mostrarTiempo = !mostrarTiempo },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = Color(0xFF1976D2)
+                    )
+                ) {
+                    Text(
+                        if (pedido.tiempoEstimado.isEmpty()) "⏱️ Asignar tiempo estimado"
+                        else "⏱️ Cambiar tiempo estimado",
+                        fontSize = 13.sp
+                    )
+                }
+
+                // Chips de tiempo
+                if (mostrarTiempo) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        tiempos.take(3).forEach { tiempo ->
+                            FilterChip(
+                                selected = pedido.tiempoEstimado == tiempo,
+                                onClick = {
+                                    onActualizarTiempo(tiempo)
+                                    mostrarTiempo = false
+                                },
+                                label = { Text(tiempo, fontSize = 11.sp) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        tiempos.drop(3).forEach { tiempo ->
+                            FilterChip(
+                                selected = pedido.tiempoEstimado == tiempo,
+                                onClick = {
+                                    onActualizarTiempo(tiempo)
+                                    mostrarTiempo = false
+                                },
+                                label = { Text(tiempo, fontSize = 11.sp) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
                 Button(
