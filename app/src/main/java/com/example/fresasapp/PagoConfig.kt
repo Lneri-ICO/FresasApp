@@ -7,8 +7,8 @@ object PagoConfig {
 
     // Datos para transferencia SPEI
     // ⚠️ Reemplaza con los datos bancarios de tu esposa
-    const val BANCO = "BBVA" // nombre de tu banco
-    const val CLABE = "000000000000000000" // tu CLABE interbancaria
-    const val TITULAR = "Nombre del titular"
+    const val BANCO = "Nu" // nombre de tu banco
+    const val CLABE = "638180000133046993" // tu CLABE interbancaria
+    const val TITULAR = "Nayeli Hernández"
     const val CONCEPTO = "Pedido Nay&Jos"
 }
