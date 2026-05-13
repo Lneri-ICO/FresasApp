@@ -114,7 +114,7 @@ fun PagoScreen(
                 titulo = "Transferencia SPEI",
                 descripcion = "Transfiere desde tu banco o app bancaria",
                 color = Color(0xFF1976D2),
-                seleccionado = metodoPagoSeleccionado == "spei",
+                seleccionado = metodoSeleccionado == "spei",
                 onClick = { metodoSeleccionado = "spei" }
             )
 
