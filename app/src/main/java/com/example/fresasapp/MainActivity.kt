@@ -24,6 +24,7 @@ import com.example.fresasapp.ui.client.CarritoScreen
 import com.example.fresasapp.ui.client.ClienteHomeScreen
 import com.example.fresasapp.ui.client.ConfirmacionScreen
 import com.example.fresasapp.ui.client.HistorialScreen
+import com.example.fresasapp.ui.client.PagoScreen
 import com.example.fresasapp.ui.client.PerfilScreen
 import com.example.fresasapp.ui.client.ResenaScreen
 import com.example.fresasapp.ui.theme.FresasAppTheme
@@ -54,6 +55,7 @@ class MainActivity : ComponentActivity() {
             FresasAppTheme {
                 val navController = rememberNavController()
                 val carritoItems = remember { mutableStateListOf<Producto>() }
+                val tipoEntregaActual = remember { mutableStateListOf<String>() }
 
                 NavHost(navController = navController, startDestination = "splash") {
 
@@ -129,8 +131,28 @@ class MainActivity : ComponentActivity() {
                         CarritoScreen(
                             carrito = carritoItems,
                             onEliminar = { producto -> carritoItems.remove(producto) },
-                            onConfirmarPedido = { tipoEntrega ->
-                                navController.navigate("confirmacion/$tipoEntrega")
+                            onIrAPago = { tipoEntrega ->
+                                tipoEntregaActual.clear()
+                                tipoEntregaActual.add(tipoEntrega)
+                                val total = carritoItems.sumOf { it.precio }
+                                navController.navigate("pago/$tipoEntrega/$total")
+                            },
+                            onRegresar = { navController.popBackStack() }
+                        )
+                    }
+
+                    composable("pago/{tipoEntrega}/{total}") { backStackEntry ->
+                        val tipoEntrega =
+                            backStackEntry.arguments?.getString("tipoEntrega") ?: "recoger"
+                        val total =
+                            backStackEntry.arguments?.getString("total")?.toDoubleOrNull() ?: 0.0
+                        PagoScreen(
+                            total = total,
+                            pedidoId = carritoItems.hashCode().toString(),
+                            onPagoCompletado = {
+                                navController.navigate("confirmacion/$tipoEntrega") {
+                                    popUpTo("carrito") { inclusive = true }
+                                }
                             },
                             onRegresar = { navController.popBackStack() }
                         )
@@ -158,8 +180,10 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable("resenas/{productoId}/{nombre}") { backStackEntry ->
-                        val productoId = backStackEntry.arguments?.getString("productoId") ?: ""
-                        val nombre = backStackEntry.arguments?.getString("nombre") ?: ""
+                        val productoId =
+                            backStackEntry.arguments?.getString("productoId") ?: ""
+                        val nombre =
+                            backStackEntry.arguments?.getString("nombre") ?: ""
                         ResenaScreen(
                             productoId = productoId,
                             productoNombre = nombre,

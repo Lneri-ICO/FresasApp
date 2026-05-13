@@ -22,7 +22,7 @@ import com.example.fresasapp.data.model.Producto
 fun CarritoScreen(
     carrito: List<Producto>,
     onEliminar: (Producto) -> Unit,
-    onConfirmarPedido: (String) -> Unit,
+    onIrAPago: (String) -> Unit,
     onRegresar: () -> Unit
 ) {
     var tipoEntrega by remember { mutableStateOf("recoger") }
@@ -54,24 +54,41 @@ fun CarritoScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text("Total:", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                            Text("$$total", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFFE91E63))
+                            Text(
+                                "$$total",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFE91E63)
+                            )
                         }
                         Spacer(modifier = Modifier.height(12.dp))
                         Button(
-                            onClick = { onConfirmarPedido(tipoEntrega) },
-                            modifier = Modifier.fillMaxWidth().height(50.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
+                            onClick = { onIrAPago(tipoEntrega) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFE91E63)
+                            ),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Confirmar Pedido", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                "💳 Ir a pagar",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }
             }
         }
     ) { padding ->
+
         if (carrito.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("🛒", fontSize = 64.sp)
                     Spacer(modifier = Modifier.height(16.dp))
@@ -84,7 +101,10 @@ fun CarritoScreen(
             }
         } else {
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 // Tipo de entrega
@@ -120,7 +140,11 @@ fun CarritoScreen(
 
                 item {
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text("Productos (${carrito.size})", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(
+                        "Productos (${carrito.size})",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                 }
 
                 // Lista de productos
@@ -131,7 +155,9 @@ fun CarritoScreen(
                         elevation = CardDefaults.cardElevation(2.dp)
                     ) {
                         Row(
-                            modifier = Modifier.padding(12.dp).fillMaxWidth(),
+                            modifier = Modifier
+                                .padding(12.dp)
+                                .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -147,12 +173,24 @@ fun CarritoScreen(
                                 )
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
-                                    Text(producto.nombre, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                    Text("$${producto.precio}", color = Color(0xFFE91E63), fontWeight = FontWeight.Bold)
+                                    Text(
+                                        producto.nombre,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp
+                                    )
+                                    Text(
+                                        "$${producto.precio}",
+                                        color = Color(0xFFE91E63),
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
                             }
                             IconButton(onClick = { onEliminar(producto) }) {
-                                Icon(Icons.Default.Delete, contentDescription = "Eliminar", tint = Color.Red)
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = "Eliminar",
+                                    tint = Color.Red
+                                )
                             }
                         }
                     }
